@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import connectDB from './config/db.js';
 import userRoutes from './routes/userRoutes.js';
+import rideRoutes from './routes/rideRoutes.js';
 
 // Initialize environment variables
 dotenv.config();
@@ -18,8 +19,10 @@ app.use(cors()); // Enable CORS
 // Connect to the database
 connectDB();
 
-// Routes
-app.use('/api/users', userRoutes);
+
+// API Routes
+app.use('/api/users', userRoutes);  // User-related routes
+app.use('/api/rides', rideRoutes);  // Ride-related routes
 
 // Test route
 app.get('/', (req, res) => {
