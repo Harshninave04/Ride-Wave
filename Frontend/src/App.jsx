@@ -1,9 +1,14 @@
-import './App.css'
+import React from 'react';
+import AppRoutes from './routes/AppRoutes'; // Import the routing logic
+import './index.css'; // Tailwind styles
 
-export default function App() {
+function App() {
   return (
-    <div className="text-center">
-      <h1 className="text-4xl font-bold text-blue-600">Hello, Ride Sharing!</h1>
+    <div className="App">
+      {/* Using AppRoutes to handle all routing */}
+      <AppRoutes />
     </div>
   );
 }
+
+export default App;
