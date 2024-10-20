@@ -1,14 +1,18 @@
-import React from 'react';
-import AppRoutes from './routes/AppRoutes'; // Import the routing logic
-import './index.css'; // Tailwind styles
+// src/App.jsx
 
-function App() {
+import React from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes';
+import { AuthProvider } from './context/AuthContext.jsx'; // Import the AuthProvider
+
+const App = () => {
   return (
-    <div className="App">
-      {/* Using AppRoutes to handle all routing */}
-      <AppRoutes />
-    </div>
+    <AuthProvider>
+      <Router>
+        <AppRoutes />
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
 export default App;
