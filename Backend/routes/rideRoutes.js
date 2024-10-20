@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middlewares/authMiddleware.js';
+import { protect, restrictTo } from '../middlewares/authMiddleware.js';
 import {
   requestRide,
   acceptRide,
@@ -14,7 +14,7 @@ const router = express.Router();
 router.post('/request', protect, requestRide);
 
 // Driver accepts a ride (Protected)
-router.post('/accept/:rideId', protect, acceptRide);
+router.post('/accept/:rideId', protect, restrictTo('driver'), acceptRide);
 
 // View ride status (Protected)
 router.get('/status/:rideId', protect, viewRideStatus);
