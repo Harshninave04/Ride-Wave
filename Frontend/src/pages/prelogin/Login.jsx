@@ -1,19 +1,19 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth'; // Import the login function
-import { AuthContext } from '../../context/AuthContext'; // Import the AuthContext to manage user session
+import { login } from '../../api/auth';
+import { AuthContext } from '../../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const { setUser } = useContext(AuthContext); // Destructure setUser from AuthContext to set user data globally
-  const navigate = useNavigate(); // Use navigate to redirect after login
+  const { setUser } = useContext(AuthContext);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await login(email, password); // Make login request to the backend
+      const response = await login(email, password); // Make login request to backend
       const { token, user } = response; // Assuming the response returns a token and user object
       localStorage.setItem('token', token); // Store the token in localStorage
       setUser(user); // Store the user in context/global state
