@@ -1,15 +1,17 @@
 import React, { useContext, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
 
 const Navbar = () => {
   const { user, setUser } = useContext(AuthContext);
   const [showLogoutModal, setShowLogoutModal] = useState(false); // Modal visibility state
+  const navigate = useNavigate();
 
-  const handleLogout = () => {
+  const handleLogout = () => {    
   localStorage.removeItem('token'); // Clear the token from localStorage
   setUser(null); // Clear the user state in context
-  setShowLogoutModal(false); // Close the modal
+    setShowLogoutModal(false); // Close the modal
+    navigate("/");
 };
 
   return (

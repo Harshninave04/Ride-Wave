@@ -1,9 +1,13 @@
 // src/components/ServiceMap.jsx
-import React from 'react';
+import React, { useContext } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
+import { AuthContext } from '../context/AuthContext';
 
 const ServiceMap = () => {
+
+  const {user, setUser} = useContext(AuthContext)
+
   // Mock data for service areas and active drivers
   const serviceAreas = [
     { id: 1, name: 'Nagpur, Maharashtra', coords: [21.1458, 79.0882], demand: 'High' },
@@ -151,14 +155,23 @@ const ServiceMap = () => {
             ))}
           </MapContainer>
         </div>
-
-        <div className="text-center mt-10">
-          <a
-            href="/signup"
-            className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300">
-            Book a Ride
-          </a>
-        </div>
+        {!user ? (
+          <div className="text-center mt-10">
+            <a
+              href="/signup"
+              className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300">
+              Book a Ride
+            </a>
+          </div>
+        ) : (
+          <div className="text-center mt-10">
+            <a
+              href="/dashboard"
+              className="bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300">
+              Explore the ride
+            </a>
+          </div>
+        )}
       </div>
     </section>
   );
