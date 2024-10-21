@@ -1,5 +1,3 @@
-// src/context/AuthContext.jsx
-
 import React, { createContext, useState, useEffect } from 'react';
 import { fetchUserProfile } from '../api/auth'; // Function to fetch the user's profile from backend
 
@@ -18,18 +16,16 @@ export const AuthProvider = ({ children }) => {
         })
         .catch(() => {
           localStorage.removeItem('token'); // Remove invalid token if fetching fails
+          setUser(null); // Make sure to set user to null on failure
         })
         .finally(() => {
           setLoading(false); // Set loading to false after fetching completes
         });
     } else {
-      setLoading(false); // No token, stop loading
+      setLoading(false); // No token, stop loading and set user as null
+      setUser(null); // Make sure to set user to null if no token is found
     }
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>; // Optionally render a loading state while fetching user
-  }
-
-  return <AuthContext.Provider value={{ user, setUser }}>{children}</AuthContext.Provider>;
+  return <AuthContext.Provider value={{ user, setUser, loading }}>{children}</AuthContext.Provider>;
 };

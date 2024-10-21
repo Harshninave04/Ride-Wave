@@ -1,17 +1,22 @@
-// src/routes/ProtectedRoute.jsx
-
 import React, { useContext } from 'react';
 import { Navigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext.jsx';
 
 const ProtectedRoute = ({ children }) => {
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
 
-  if (!user) {
-    return <Navigate to="/login" />; // Redirect to login if not authenticated
+  // If the app is still fetching user info, show a loading screen
+  if (loading) {
+    return <div>Loading...</div>; // You can replace this with a proper loading spinner
   }
 
-  return children; // Render the child components if authenticated
+  // If no user is logged in, redirect to login page
+  if (!user) {
+    return <Navigate to="/login" />;
+  }
+
+  // If user exists, render the children (protected components)
+  return children;
 };
 
 export default ProtectedRoute;

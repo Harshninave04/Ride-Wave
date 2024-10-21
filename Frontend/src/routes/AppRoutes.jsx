@@ -6,6 +6,7 @@ import Homepage from '../pages/prelogin/Homepage';
 import Login from '../pages/prelogin/Login';
 import Signup from '../pages/prelogin/Signup';
 import ProtectedRoute from './ProtectedRoute';// Import ProtectedRoute
+import PostLoginHomepage from '../pages/postlogin/PostLoginHomepage';
 
 const AppRoutes = () => {
   return (
@@ -15,7 +16,7 @@ const AppRoutes = () => {
       <Route path="/signup" element={<Signup />} />
       <Route
         path="/dashboard"
-        element={<ProtectedRoute>{/* Your Protected Component */}</ProtectedRoute>}
+        element={<ProtectedRoute><PostLoginHomepage/></ProtectedRoute>}
       />
     </Routes>
   );

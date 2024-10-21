@@ -17,7 +17,7 @@ const Login = () => {
       const { token, user } = response; // Assuming the response returns a token and user object
       localStorage.setItem('token', token); // Store the token in localStorage
       setUser(user); // Store the user in context/global state
-      navigate('/'); // Redirect to homepage after successful login
+      navigate('/dashboard'); // Redirect to homepage after successful login
     } catch (err) {
       setError('Login failed. Please check your credentials.');
     }
