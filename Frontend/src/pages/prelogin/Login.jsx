@@ -1,25 +1,41 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth';
+import { login } from '../../api/auth'; // Assumes an API call function for logging in exists
 import { AuthContext } from '../../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const { setUser } = useContext(AuthContext);
+  const [error, setError] = useState(''); // For displaying login errors
+  const { setUser } = useContext(AuthContext); // Assuming AuthContext manages user state
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    e.preventDefault(); // Prevent page reload on form submit
+    setError(''); // Clear previous errors before new attempt
+
     try {
-      const response = await login(email, password); // Make login request to backend
-      const { token, user } = response; // Assuming the response returns a token and user object
-      localStorage.setItem('token', token); // Store the token in localStorage
-      setUser(user); // Store the user in context/global state
-      navigate('/dashboard'); // Redirect to homepage after successful login
+      const response = await login(email, password); // API call for login
+      const { token, user } = response; // Assuming response contains a token and user details
+
+      // Store the token in localStorage (or cookies)
+      localStorage.setItem('token', token);
+
+      // Update the user in global state/context
+      setUser(user);
+
+      // Check user role and redirect accordingly
+      if (user.role === 'driver') {
+        navigate('/driver-dashboard'); // Redirect to driver dashboard
+      } else if (user.role === 'rider') {
+        navigate('/rider-dashboard'); // Redirect to rider dashboard
+      } else {
+        navigate('/home'); // Fallback to general dashboard if role is undefined
+      }
     } catch (err) {
-      setError('Login failed. Please check your credentials.');
+      // Display an error if the login fails (wrong credentials, etc.)
+      setError('Login failed. Please check your email or password.');
     }
   };
 
@@ -27,9 +43,13 @@ const Login = () => {
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
       <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
         <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
-        {error && <p className="text-red-500 text-center">{error}</p>}{' '}
+
         {/* Display error message if login fails */}
+        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
+
+        {/* Login form */}
         <form onSubmit={handleSubmit}>
+          {/* Email field */}
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
               Email
@@ -43,6 +63,8 @@ const Login = () => {
               required
             />
           </div>
+
+          {/* Password field */}
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
               Password
@@ -56,12 +78,16 @@ const Login = () => {
               required
             />
           </div>
+
+          {/* Submit button */}
           <button
             type="submit"
             className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
             Login
           </button>
         </form>
+
+        {/* Link to Signup page */}
         <p className="mt-4 text-center">
           Don't have an account?{' '}
           <Link to="/signup" className="text-blue-600 hover:underline">
