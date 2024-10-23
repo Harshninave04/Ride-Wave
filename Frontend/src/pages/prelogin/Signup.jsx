@@ -6,13 +6,16 @@ const Signup = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [role, setRole] = useState('passenger'); // Default to 'passenger'
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await signup(name, email, password); // Make signup request to the backend
+      // Include role in signup request
+      await signup(name, email, password, role);
       navigate('/login'); // Redirect to login page after successful signup
     } catch (err) {
       setError('Signup failed. Please try again.');
@@ -51,6 +54,20 @@ const Signup = () => {
               className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
               required
             />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="role">
+              Select Role
+            </label>
+            <select
+              id="role"
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
+              required>
+              <option value="passenger">Passenger</option>
+              <option value="driver">Driver</option>
+            </select>
           </div>
           <div className="mb-6">
             <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
