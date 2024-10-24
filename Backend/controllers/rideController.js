@@ -64,6 +64,31 @@ export const acceptRide = async (req, res) => {
   }
 };
 
+// Driver rejects a ride
+export const rejectRide = async (req, res) => {
+  try {
+    const ride = await Ride.findById(req.params.rideId);
+
+    if (!ride) {
+      return res.status(404).json({ message: 'Ride not found' });
+    }
+
+    // Check if the ride is still pending
+    if (ride.status !== 'Pending') {
+      return res.status(400).json({ message: 'Ride is not available to reject' });
+    }
+
+    // Mark ride as rejected
+    ride.status = 'Rejected';
+    await ride.save();
+
+    res.status(200).json({ message: 'Ride rejected', ride });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 // View ride status
 export const viewRideStatus = async (req, res) => {
   try {

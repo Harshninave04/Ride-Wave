@@ -7,6 +7,7 @@ import {
   startRide,
   completeRide,
   getAvailableRides,
+  rejectRide,
 } from '../controllers/rideController.js';
 
 const router = express.Router();
@@ -16,6 +17,9 @@ router.post('/request', protect, requestRide);
 
 // Driver accepts a ride (Protected)
 router.post('/accept/:rideId', protect, restrictTo('driver'), acceptRide);
+
+// Driver rejects a ride (Protected)
+router.post('/reject/:rideId', protect, restrictTo('driver'), rejectRide);
 
 // View ride status (Protected)
 router.get('/status/:rideId', protect, viewRideStatus);
