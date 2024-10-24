@@ -8,12 +8,14 @@ import {
 } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { fetchUserProfile } from '../../api/auth'; // Assuming API method to fetch driver data
-import { acceptRideRequest, getAvailableRideRequests } from '../../api/rideAPI.js';
+import { acceptRideRequest, getAvailableRideRequests, rejectRideRequest } from '../../api/rideAPI.js';
 
 const DriverHomepage = () => {
   const [driverData, setDriverData] = useState(null);
   const [earnings, setEarnings] = useState(null); // Earnings summary
   const [rideRequests, setRideRequests] = useState([]); // Pending rides
+  const [showRejectModal, setShowRejectModal] = useState(false);
+  const [rejectedRide, setRejectedRide] = useState(null);
 
   useEffect(() => {
     const fetchDriverData = async () => {
@@ -59,14 +61,51 @@ const DriverHomepage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await acceptRideRequest(rideId, token); // Accept the ride
-      console.log('Ride accepted:', response);
 
-      // Optionally: Update the rideRequests list to remove the accepted ride or mark it as accepted
-      setRideRequests(rideRequests.filter((ride) => ride.id !== rideId));
+      // Update the specific ride status to "Accepted"
+      setRideRequests((prevRequests) =>
+        prevRequests.map((ride) => (ride._id === rideId ? { ...ride, status: 'Accepted' } : ride)),
+      );
     } catch (error) {
       console.error('Error accepting ride:', error);
     }
   };
+
+
+  // Function to reject a ride
+  const handleRejectRide = async (rideId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await rejectRideRequest(rideId, token);
+      console.log('Ride rejected:', response);
+      // Optionally, update the UI after rejecting the ride
+      // e.g., remove the ride from the list
+      setRejectedRide(rideId);
+      setShowRejectModal(true);
+    } catch (error) {
+      console.error('Failed to reject ride:', error);
+    }
+  };
+
+  const confirmRejectRide = () => {
+    if (rejectedRide) {
+      // Update the state first (close modal, remove card)
+      setRideRequests((prev) => prev.filter((ride) => ride._id !== rejectedRide));
+      setShowRejectModal(false); // Close the modal
+
+      // Now send the rejection request to the backend
+      rejectRideRequest(rejectedRide)
+        .then(() => {
+          // Optionally handle the success response if needed
+          setRejectedRide(null); // Reset the rejected ride
+        })
+        .catch((error) => {
+          console.error('Error rejecting ride:', error);
+          // Optionally handle error (e.g., add back the ride if the API request fails)
+        });
+    }
+  };
+
 
   return (
     <IconContext.Provider value={{ color: '#3B82F6', size: '40px' }}>
@@ -117,6 +156,7 @@ const DriverHomepage = () => {
             <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
               Current Ride Requests
             </h2>
+
             {rideRequests.length > 0 ? (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                 {rideRequests.map((ride) => (
@@ -136,18 +176,24 @@ const DriverHomepage = () => {
                       </p>
                     </div>
 
-                    <div className="flex justify-center space-x-4 mt-4">
-                      <button
-                        className="bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-200 transform hover:scale-105"
-                        onClick={() => handleAcceptRide(ride._id)}>
-                        <i className="fas fa-check"></i> Accept
-                      </button>
-                      <button
-                        className="bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-200 transform hover:scale-105"
-                        onClick={() => handleRejectRide(ride._id)}>
-                        <i className="fas fa-times"></i> Reject
-                      </button>
-                    </div>
+                    {ride.status === 'Accepted' ? (
+                      <p className="text-center bg-green-500 text-white py-2 rounded-lg font-bold">
+                        Accepted
+                      </p>
+                    ) : (
+                      <div className="flex justify-center space-x-4 mt-4">
+                        <button
+                          className="bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-200 transform hover:scale-105"
+                          onClick={() => handleAcceptRide(ride._id)}>
+                          <i className="fas fa-check"></i> Accept
+                        </button>
+                        <button
+                          className="bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-200 transform hover:scale-105"
+                          onClick={() => handleRejectRide(ride._id)}>
+                          <i className="fas fa-times"></i> Reject
+                        </button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -156,9 +202,32 @@ const DriverHomepage = () => {
                 No pending ride requests at the moment.
               </p>
             )}
+
+            {/* Reject Modal */}
+            {showRejectModal && (
+              <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+                <div className="bg-white rounded-lg p-8 shadow-lg">
+                  <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirm Ride Rejection</h3>
+                  <p className="text-gray-700 mb-6">
+                    Are you sure you want to reject this ride request?
+                  </p>
+                  <div className="flex justify-end space-x-4">
+                    <button
+                      className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700"
+                      onClick={() => setShowRejectModal(false)}>
+                      Cancel
+                    </button>
+                    <button
+                      className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                      onClick={confirmRejectRide}>
+                      Confirm Reject
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </section>
-
         {/* Earnings Summary */}
         <section id="earnings" className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">

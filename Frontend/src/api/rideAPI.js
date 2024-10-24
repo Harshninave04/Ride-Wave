@@ -41,6 +41,26 @@ export const acceptRideRequest = async (rideId, token) => {
   }
 };
 
+// Function to reject a ride request (for drivers)
+export const rejectRideRequest = async (rideId, token) => {
+  try {
+    const response = await axios.post(
+      `${API_URL}/reject/${rideId}`,  // Assuming your API has a 'reject' endpoint
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,  // Passing the auth token for security
+        },
+      }
+    );
+    return response.data; // Return the rejected ride response data (if any)
+  } catch (error) {
+    console.error('Error rejecting ride request:', error);
+    throw error; // Propagate the error to handle in the component
+  }
+};
+
+
 // Function to get available ride requests (for drivers)
 export const getAvailableRideRequests = async (token) => {
   const response = await fetch(`${API_URL}/available`, {
