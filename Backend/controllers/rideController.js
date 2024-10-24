@@ -22,6 +22,23 @@ export const requestRide = async (req, res) => {
   }
 };
 
+// Get available ride requests (rides with 'Pending' status)
+export const getAvailableRides = async (req, res) => {
+  try {
+    // Find rides that are still pending (not accepted by a driver)
+    const availableRides = await Ride.find({ status: 'Pending' });
+
+    if (availableRides.length === 0) {
+      return res.status(200).json({ message: 'No available rides at the moment', rides: [] });
+    }
+
+    res.status(200).json({ rides: availableRides });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 // Driver accepts a ride
 export const acceptRide = async (req, res) => {
   try {

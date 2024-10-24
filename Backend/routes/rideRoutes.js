@@ -6,6 +6,7 @@ import {
   viewRideStatus,
   startRide,
   completeRide,
+  getAvailableRides,
 } from '../controllers/rideController.js';
 
 const router = express.Router();
@@ -24,5 +25,8 @@ router.put('/start/:rideId', protect, startRide);
 
 // Driver completes the ride (Protected)
 router.put('/complete/:rideId', protect, completeRide);
+
+// Get available ride requests (for drivers)
+router.get('/available', protect, restrictTo('driver'), getAvailableRides);
 
 export default router;

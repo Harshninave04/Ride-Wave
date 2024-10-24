@@ -22,8 +22,8 @@ export const requestRide = async (pickupLocation, dropoffLocation, token) => {
   }
 };
 
-// Function to accept a ride (driver only)
-export const acceptRide = async (rideId, token) => {
+// Function to accept a ride request (for drivers)
+export const acceptRideRequest = async (rideId, token) => {
   try {
     const response = await axios.post(
       `${API_URL}/accept/${rideId}`,
@@ -32,14 +32,35 @@ export const acceptRide = async (rideId, token) => {
         headers: {
           Authorization: `Bearer ${token}`,
         },
-      },
+      }
     );
-    return response.data;
+    return response.data; // Return the accepted ride data
   } catch (error) {
-    console.error('Error accepting ride:', error);
-    throw error;
+    console.error('Error accepting ride request:', error);
+    throw error; // Propagate the error to be handled in the component
   }
 };
+
+// Function to get available ride requests (for drivers)
+export const getAvailableRideRequests = async (token) => {
+  const response = await fetch(`${API_URL}/available`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch ride requests');
+  }
+
+  const data = await response.json();
+
+  // Check if "rides" array exists
+  return data.rides || [];
+};
+
 
 // Function to start a ride (driver only)
 export const startRide = async (rideId, token) => {
