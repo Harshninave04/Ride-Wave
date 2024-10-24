@@ -8,6 +8,7 @@ import {
 } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { fetchUserProfile } from '../../api/auth'; // Assuming API method to fetch driver data
+import { acceptRideRequest, getAvailableRideRequests } from '../../api/rideAPI.js';
 
 const DriverHomepage = () => {
   const [driverData, setDriverData] = useState(null);
@@ -32,31 +33,40 @@ const DriverHomepage = () => {
     fetchDriverData();
   }, []);
 
-  // Simulate fetching earnings and ride requests
   useEffect(() => {
-    setEarnings({
-      daily: '₹1500',
-      weekly: '₹10500',
-    });
+    const fetchRideRequests = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const requests = await getAvailableRideRequests(token);
+        console.log('Fetched ride requests:', requests);
+        setRideRequests(requests);
+      } catch (error) {
+        console.error('Error fetching ride requests:', error.message);
+      }
+    };
 
-    // Example ride requests
-    setRideRequests([
-      {
-        id: 1,
-        pickup: 'MG Road, Pune',
-        dropoff: 'Viman Nagar, Pune',
-        time: '15 min',
-        estimatedFare: '₹300',
-      },
-      {
-        id: 2,
-        pickup: 'FC Road, Pune',
-        dropoff: 'Koregaon Park, Pune',
-        time: '10 min',
-        estimatedFare: '₹200',
-      },
-    ]);
+    fetchRideRequests();
   }, []);
+
+  useEffect(() => {
+    console.log('Current ride requests state:', rideRequests); // Log state whenever it changes
+  }, [rideRequests]);
+
+
+
+  // Function to accept a ride
+  const handleAcceptRide = async (rideId) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await acceptRideRequest(rideId, token); // Accept the ride
+      console.log('Ride accepted:', response);
+
+      // Optionally: Update the rideRequests list to remove the accepted ride or mark it as accepted
+      setRideRequests(rideRequests.filter((ride) => ride.id !== rideId));
+    } catch (error) {
+      console.error('Error accepting ride:', error);
+    }
+  };
 
   return (
     <IconContext.Provider value={{ color: '#3B82F6', size: '40px' }}>
@@ -108,23 +118,43 @@ const DriverHomepage = () => {
               Current Ride Requests
             </h2>
             {rideRequests.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                 {rideRequests.map((ride) => (
-                  <div key={ride.id} className="bg-gray-100 p-6 rounded-lg shadow-lg text-center">
-                    <h3 className="text-lg font-bold text-gray-900">Pickup: {ride.pickup}</h3>
-                    <p className="text-gray-600">Dropoff: {ride.dropoff}</p>
-                    <p className="text-gray-600">Time: {ride.time}</p>
-                    <p className="text-gray-800 font-semibold mt-4">
-                      Estimated Fare: {ride.estimatedFare}
-                    </p>
-                    <button className="mt-4 bg-blue-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-blue-700 transition">
-                      Accept Ride
-                    </button>
+                  <div
+                    key={ride._id}
+                    className="bg-white p-5 rounded-lg shadow-lg border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-xl">
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-lg font-semibold text-gray-800">Pickup:</h4>
+                      <p className="text-lg font-medium text-gray-700 truncate">
+                        {ride.pickupLocation}
+                      </p>
+                    </div>
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-lg font-semibold text-gray-800">Dropoff:</h4>
+                      <p className="text-lg font-medium text-gray-700 truncate">
+                        {ride.dropoffLocation}
+                      </p>
+                    </div>
+
+                    <div className="flex justify-center space-x-4 mt-4">
+                      <button
+                        className="bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-200 transform hover:scale-105"
+                        onClick={() => handleAcceptRide(ride._id)}>
+                        <i className="fas fa-check"></i> Accept
+                      </button>
+                      <button
+                        className="bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-200 transform hover:scale-105"
+                        onClick={() => handleRejectRide(ride._id)}>
+                        <i className="fas fa-times"></i> Reject
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-600">No pending ride requests at the moment.</p>
+              <p className="text-center text-gray-600 text-lg">
+                No pending ride requests at the moment.
+              </p>
             )}
           </div>
         </section>
