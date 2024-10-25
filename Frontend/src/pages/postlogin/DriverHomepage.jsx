@@ -50,6 +50,7 @@ const DriverHomepage = () => {
     fetchRideRequests();
   }, []);
 
+
   useEffect(() => {
     console.log('Current ride requests state:', rideRequests); // Log state whenever it changes
   }, [rideRequests]);
@@ -60,9 +61,9 @@ const DriverHomepage = () => {
   const handleAcceptRide = async (rideId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await acceptRideRequest(rideId, token); // Accept the ride
+      await acceptRideRequest(rideId, token); // This should save the "Accepted" status in the backend.
 
-      // Update the specific ride status to "Accepted"
+      // Update state to reflect the accepted ride status
       setRideRequests((prevRequests) =>
         prevRequests.map((ride) => (ride._id === rideId ? { ...ride, status: 'Accepted' } : ride)),
       );

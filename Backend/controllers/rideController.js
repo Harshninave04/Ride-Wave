@@ -22,12 +22,16 @@ export const requestRide = async (req, res) => {
   }
 };
 
-// Get available ride requests (rides with 'Pending' status)
+// Get available rides (rides with 'Pending' or 'Accepted' status)
 export const getAvailableRides = async (req, res) => {
   try {
-    const availableRides = await Ride.find({ status: 'Pending' })
-      .populate('passenger', 'name') // Populate passenger's name
+    const availableRides = await Ride.find({
+      status: { $in: ['Pending', 'Accepted'] },
+    })
+      .populate('passenger', 'name')
       .exec();
+
+    console.log('Fetched available rides:', availableRides); // Log fetched data
 
     if (availableRides.length === 0) {
       return res.status(200).json({ message: 'No available rides at the moment', rides: [] });
@@ -35,9 +39,13 @@ export const getAvailableRides = async (req, res) => {
 
     res.status(200).json({ rides: availableRides });
   } catch (error) {
+    console.error('Error fetching available rides:', error);
     res.status(500).json({ message: 'Server error' });
   }
 };
+
+
+
 
 
 // Driver accepts a ride
