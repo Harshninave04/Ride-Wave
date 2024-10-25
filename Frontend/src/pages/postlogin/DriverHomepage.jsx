@@ -163,12 +163,21 @@ const DriverHomepage = () => {
                   <div
                     key={ride._id}
                     className="bg-white p-5 rounded-lg shadow-lg border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-xl">
+                    {/* Passenger Name */}
+                    <div className="flex justify-between items-center mb-4">
+                      <h4 className="text-lg font-semibold text-gray-800">Passenger:</h4>
+                      <p className="text-lg font-medium text-gray-700 truncate">
+                        {ride.passenger.name} {/* Access the passenger’s name */}
+                      </p>
+                    </div>
+
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="text-lg font-semibold text-gray-800">Pickup:</h4>
                       <p className="text-lg font-medium text-gray-700 truncate">
                         {ride.pickupLocation}
                       </p>
                     </div>
+
                     <div className="flex justify-between items-center mb-4">
                       <h4 className="text-lg font-semibold text-gray-800">Dropoff:</h4>
                       <p className="text-lg font-medium text-gray-700 truncate">
@@ -228,6 +237,7 @@ const DriverHomepage = () => {
             )}
           </div>
         </section>
+
         {/* Earnings Summary */}
         <section id="earnings" className="py-16 bg-gray-50">
           <div className="max-w-7xl mx-auto px-4">
