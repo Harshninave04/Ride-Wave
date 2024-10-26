@@ -121,54 +121,122 @@ useEffect(() => {
         </section>
 
         {/* Ride Request Section */}
-        <section
-          id="ride-request"
-          className="py-16 bg-gradient-to-r from-blue-50 to-indigo-100 relative">
-          {/* Decorative background circle */}
-          <div className="absolute -top-10 -left-10 w-48 h-48 bg-blue-200 rounded-full opacity-30"></div>
-          <div className="absolute -bottom-10 -right-10 w-48 h-48 bg-blue-400 rounded-full opacity-20"></div>
+        <section className="py-20 relative overflow-hidden">
+          {/* Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50" />
+
+          {/* Decorative Elements */}
+          <div className="absolute top-0 left-0 w-96 h-96 bg-gradient-to-br from-blue-200 to-blue-300 rounded-full filter blur-3xl opacity-20 -translate-x-1/2 -translate-y-1/2" />
+          <div className="absolute bottom-0 right-0 w-96 h-96 bg-gradient-to-br from-purple-200 to-indigo-300 rounded-full filter blur-3xl opacity-20 translate-x-1/2 translate-y-1/2" />
+
+          {/* Animated circles */}
+          <div className="absolute left-1/4 top-1/4 w-4 h-4 bg-blue-400 rounded-full opacity-20 animate-pulse" />
+          <div className="absolute right-1/3 bottom-1/3 w-6 h-6 bg-purple-400 rounded-full opacity-20 animate-pulse delay-300" />
+          <div className="absolute left-2/3 top-1/2 w-3 h-3 bg-indigo-400 rounded-full opacity-20 animate-pulse delay-700" />
 
           <div className="max-w-7xl mx-auto px-4 relative z-10">
-            <h2 className="text-4xl font-bold text-center mb-10 text-gray-800">
-              Request a New Ride
-            </h2>
+            {/* Header with animated underline */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4 relative inline-block">
+                Request a New Ride
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-2/3 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full" />
+              </h2>
+              <p className="text-gray-600 max-w-2xl mx-auto">
+                Enter your pickup and dropoff locations to request a ride
+              </p>
+            </div>
 
-            <div className="flex flex-col items-center space-y-4 bg-white shadow-lg rounded-lg p-8 md:p-12 max-w-lg mx-auto">
-              <div className="w-full flex items-center relative">
-                <span className="absolute left-3 text-gray-400">
-                  <i className="fas fa-map-marker-alt"></i>
-                </span>
-                <input
-                  type="text"
-                  placeholder="Pickup Location"
-                  value={newRide.pickupLocation}
-                  onChange={(e) => setNewRide({ ...newRide, pickupLocation: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                />
+            {/* Main Form Card */}
+            <div className="max-w-lg mx-auto">
+              <div className="bg-white rounded-2xl shadow-xl p-8 md:p-10 backdrop-blur-lg bg-opacity-80 relative overflow-hidden">
+                {/* Decorative corner accent */}
+                <div className="absolute top-0 right-0 w-40 h-40 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full filter blur-xl opacity-50 -translate-x-1/2 -translate-y-1/2" />
+
+                <div className="space-y-6 relative">
+                  {/* Pickup Location Input */}
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5">
+                      <svg
+                        className="w-full h-full text-blue-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Enter pickup location"
+                      value={newRide.pickupLocation}
+                      onChange={(e) => setNewRide({ ...newRide, pickupLocation: e.target.value })}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition-all duration-200"
+                    />
+                    <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-400 to-purple-400 group-hover:w-full transition-all duration-300" />
+                  </div>
+
+                  {/* Dropoff Location Input */}
+                  <div className="relative group">
+                    <div className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5">
+                      <svg
+                        className="w-full h-full text-purple-500"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                        />
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth="2"
+                          d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
+                      </svg>
+                    </div>
+                    <input
+                      type="text"
+                      placeholder="Enter dropoff location"
+                      value={newRide.dropoffLocation}
+                      onChange={(e) => setNewRide({ ...newRide, dropoffLocation: e.target.value })}
+                      className="w-full pl-12 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-transparent transition-all duration-200"
+                    />
+                    <div className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-purple-400 to-blue-400 group-hover:w-full transition-all duration-300" />
+                  </div>
+
+                  {/* Request Button */}
+                  <button
+                    onClick={handleRideRequest}
+                    className="w-full py-4 px-6 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transform transition-all duration-200 hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    Request Ride
+                  </button>
+
+                  {/* Status Message */}
+                  {rideStatus && (
+                    <div className="mt-4 py-3 px-4 bg-blue-50 border border-blue-100 rounded-lg">
+                      <p className="text-blue-700 text-center font-medium">{rideStatus}</p>
+                    </div>
+                  )}
+                </div>
               </div>
 
-              <div className="w-full flex items-center relative">
-                <span className="absolute left-3 text-gray-400">
-                  <i className="fas fa-map-pin"></i>
-                </span>
-                <input
-                  type="text"
-                  placeholder="Dropoff Location"
-                  value={newRide.dropoffLocation}
-                  onChange={(e) => setNewRide({ ...newRide, dropoffLocation: e.target.value })}
-                  className="w-full pl-10 pr-4 py-3 text-gray-700 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-                />
+              {/* Extra Info Card */}
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-500">Need help? Contact our support team 24/7</p>
               </div>
-
-              <button
-                onClick={handleRideRequest}
-                className="w-full bg-blue-600 text-white py-3 px-6 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 transform hover:scale-105">
-                Request Ride
-              </button>
-
-              {rideStatus && (
-                <p className="mt-4 text-blue-600 text-center font-semibold">{rideStatus}</p>
-              )}
             </div>
           </div>
         </section>
