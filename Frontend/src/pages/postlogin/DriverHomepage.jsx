@@ -152,83 +152,167 @@ const DriverHomepage = () => {
         </section>
 
         {/* Ride Requests Section */}
-        <section id="ride-requests" className="py-16 bg-white">
+        <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="max-w-7xl mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-10 text-gray-800">
-              Current Ride Requests
-            </h2>
+            {/* Header with animated underline */}
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-bold text-gray-800 mb-4 relative inline-block">
+                Current Ride Requests
+                <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-1/2 h-1 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full" />
+              </h2>
+            </div>
 
             {rideRequests.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 {rideRequests.map((ride) => (
                   <div
                     key={ride._id}
-                    className="bg-white p-5 rounded-lg shadow-lg border border-gray-200 transition-transform transform hover:scale-105 hover:shadow-xl">
-                    {/* Passenger Name */}
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-lg font-semibold text-gray-800">Passenger:</h4>
-                      <p className="text-lg font-medium text-gray-700 truncate">
-                        {ride.passenger.name} {/* Access the passenger’s name */}
-                      </p>
-                    </div>
+                    className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
+                    {/* Decorative top gradient bar */}
+                    <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 to-purple-400" />
 
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-lg font-semibold text-gray-800">Pickup:</h4>
-                      <p className="text-lg font-medium text-gray-700 truncate">
-                        {ride.pickupLocation}
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-center mb-4">
-                      <h4 className="text-lg font-semibold text-gray-800">Dropoff:</h4>
-                      <p className="text-lg font-medium text-gray-700 truncate">
-                        {ride.dropoffLocation}
-                      </p>
-                    </div>
-
-                    {ride.status === 'Accepted' ? (
-                      <p className="text-center bg-green-500 text-white py-2 rounded-lg font-bold">
-                        Accepted
-                      </p>
-                    ) : (
-                      <div className="flex justify-center space-x-4 mt-4">
-                        <button
-                          className="bg-green-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-green-700 transition duration-200 transform hover:scale-105"
-                          onClick={() => handleAcceptRide(ride._id)}>
-                          <i className="fas fa-check"></i> Accept
-                        </button>
-                        <button
-                          className="bg-red-600 text-white py-2 px-4 rounded-lg shadow-md hover:bg-red-700 transition duration-200 transform hover:scale-105"
-                          onClick={() => handleRejectRide(ride._id)}>
-                          <i className="fas fa-times"></i> Reject
-                        </button>
+                    <div className="p-6 pt-8">
+                      {/* Passenger Info */}
+                      <div className="flex items-center space-x-4 mb-6">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
+                          <svg
+                            className="w-6 h-6 text-blue-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                            />
+                          </svg>
+                        </div>
+                        <div>
+                          <p className="text-sm text-gray-500">Passenger</p>
+                          <p className="font-semibold text-gray-800">{ride.passenger.name}</p>
+                        </div>
                       </div>
-                    )}
+
+                      {/* Location Details */}
+                      <div className="space-y-4 mb-6">
+                        {/* Pickup Location */}
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-green-100 flex items-center justify-center mt-1">
+                            <svg
+                              className="w-5 h-5 text-green-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-500">Pickup Location</p>
+                            <p className="font-medium text-gray-800">{ride.pickupLocation}</p>
+                          </div>
+                        </div>
+
+                        {/* Dropoff Location */}
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center mt-1">
+                            <svg
+                              className="w-5 h-5 text-red-600"
+                              fill="none"
+                              stroke="currentColor"
+                              viewBox="0 0 24 24">
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                              />
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth="2"
+                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                              />
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-gray-500">Dropoff Location</p>
+                            <p className="font-medium text-gray-800">{ride.dropoffLocation}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Status and Actions */}
+                      {ride.status === 'Accepted' ? (
+                        <div className="bg-green-500 text-white py-2 px-4 rounded-lg text-center font-semibold">
+                          Accepted
+                        </div>
+                      ) : (
+                        <div className="flex space-x-3">
+                          <button
+                            onClick={() => handleAcceptRide(ride._id)}
+                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
+                            Accept
+                          </button>
+                          <button
+                            onClick={() => handleRejectRide(ride._id)}
+                            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
+                            Reject
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <p className="text-center text-gray-600 text-lg">
-                No pending ride requests at the moment.
-              </p>
+              <div className="bg-white rounded-xl shadow-md p-12 text-center">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
+                  <svg
+                    className="w-8 h-8 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24">
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <p className="text-xl text-gray-600 mb-2">No pending ride requests</p>
+                <p className="text-gray-400">New requests will appear here when available</p>
+              </div>
             )}
 
             {/* Reject Modal */}
             {showRejectModal && (
-              <div className="fixed z-50 inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-                <div className="bg-white rounded-lg p-8 shadow-lg">
+              <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
+                <div className="bg-white rounded-xl shadow-xl p-6 max-w-md w-full mx-4 transform transition-all">
                   <h3 className="text-2xl font-bold text-gray-800 mb-4">Confirm Ride Rejection</h3>
-                  <p className="text-gray-700 mb-6">
+                  <p className="text-gray-600 mb-6">
                     Are you sure you want to reject this ride request?
                   </p>
                   <div className="flex justify-end space-x-4">
                     <button
-                      className="bg-gray-600 text-white py-2 px-4 rounded-lg hover:bg-gray-700"
+                      className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
                       onClick={() => setShowRejectModal(false)}>
                       Cancel
                     </button>
                     <button
-                      className="bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700"
+                      className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors font-medium"
                       onClick={confirmRejectRide}>
                       Confirm Reject
                     </button>
