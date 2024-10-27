@@ -1,99 +1,109 @@
 import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { login } from '../../api/auth'; // Assumes an API call function for logging in exists
+import { login } from '../../api/auth';
 import { AuthContext } from '../../context/AuthContext';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState(''); // For displaying login errors
-  const { setUser } = useContext(AuthContext); // Assuming AuthContext manages user state
+  const [error, setError] = useState('');
+  const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // Handle form submission
   const handleSubmit = async (e) => {
-    e.preventDefault(); // Prevent page reload on form submit
-    setError(''); // Clear previous errors before new attempt
+    e.preventDefault();
+    setError('');
+    setIsLoading(true);
 
     try {
-      const response = await login(email, password); // API call for login
-      const { token, user } = response; // Assuming response contains a token and user details
-
-      // Store the token in localStorage (or cookies)
+      const response = await login(email, password);
+      const { token, user } = response;
       localStorage.setItem('token', token);
-
-      // Update the user in global state/context
       setUser(user);
 
-      // Check user role and redirect accordingly
       if (user.role === 'driver') {
-        navigate('/driver-dashboard'); // Redirect to driver dashboard
-      } else if (user.role === 'rider') {
-        navigate('/rider-dashboard'); // Redirect to rider dashboard
+        navigate('/driver-dashboard');
       } else {
-        navigate('/home'); // Fallback to general dashboard if role is undefined
+        navigate('/home');
       }
     } catch (err) {
-      // Display an error if the login fails (wrong credentials, etc.)
       setError('Login failed. Please check your email or password.');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="max-w-md w-full bg-white p-8 rounded-lg shadow-md">
-        <h2 className="text-2xl font-bold text-center mb-6">Login</h2>
-
-        {/* Display error message if login fails */}
-        {error && <p className="text-red-500 text-center mb-4">{error}</p>}
-
-        {/* Login form */}
-        <form onSubmit={handleSubmit}>
-          {/* Email field */}
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="email">
-              Email
-            </label>
-            <input
-              type="email"
-              id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-gray-100">
+      <div className="max-w-md w-full mx-4">
+        <div className="bg-white rounded-xl shadow-lg p-8 space-y-6">
+          {/* Header Section */}
+          <div className="text-center space-y-2">
+            <h2 className="text-3xl font-bold text-gray-900">Welcome back</h2>
+            <p className="text-gray-500">Enter your credentials to access your account</p>
           </div>
 
-          {/* Password field */}
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="password">
-              Password
-            </label>
-            <input
-              type="password"
-              id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-              required
-            />
+          {/* Error Alert */}
+          {error && (
+            <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg text-sm">{error}</div>
+          )}
+
+          {/* Login Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {/* Email Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="email">
+                Email
+              </label>
+              <input
+                type="email"
+                id="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 outline-none"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            {/* Password Field */}
+            <div className="space-y-2">
+              <label className="block text-sm font-medium text-gray-700" htmlFor="password">
+                Password
+              </label>
+              <input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200 outline-none"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-medium transition duration-200 transform hover:translate-y-[-1px] disabled:opacity-50 disabled:cursor-not-allowed">
+              {isLoading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+
+          {/* Signup Link */}
+          <div className="text-center">
+            <p className="text-gray-600">
+              Don't have an account?{' '}
+              <Link
+                to="/signup"
+                className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+                Sign Up
+              </Link>
+            </p>
           </div>
-
-          {/* Submit button */}
-          <button
-            type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition duration-300">
-            Login
-          </button>
-        </form>
-
-        {/* Link to Signup page */}
-        <p className="mt-4 text-center">
-          Don't have an account?{' '}
-          <Link to="/signup" className="text-blue-600 hover:underline">
-            Sign Up
-          </Link>
-        </p>
+        </div>
       </div>
     </div>
   );
