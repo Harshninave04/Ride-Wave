@@ -2,8 +2,16 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import FeatureCard from '../../components/FeatureCard';
-import { fetchRecentRides, requestRide, viewRideStatus } from '../../api/rideAPI';
-import { FaShieldAlt, FaMoneyBillWave, FaBolt, FaMapMarkerAlt, FaLocationArrow } from 'react-icons/fa';
+import { fetchRecentRides, requestRide } from '../../api/rideAPI';
+import {
+  FaShieldAlt,
+  FaMoneyBillWave,
+  FaBolt,
+  FaMapMarkerAlt,
+  FaLocationArrow,
+  FaCalendar,
+  FaChevronRight,
+} from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import ServiceMap from '../../components/ServiceMap';
 import { fetchUserProfile } from '../../api/auth';
@@ -55,6 +63,17 @@ const PostLoginHomepage = () => {
       setRideStatus('❌ Ride Request Failed');
     } finally {
       setIsRequesting(false);
+    }
+  };
+
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-green-100 text-green-700 border border-green-200';
+      case 'ongoing':
+        return 'bg-blue-100 text-blue-700 border border-blue-200';
+      default:
+        return 'bg-yellow-100 text-yellow-700 border border-yellow-200';
     }
   };
 
@@ -263,38 +282,45 @@ const PostLoginHomepage = () => {
         </section>
 
         {/* Recent Rides Section */}
-        <section className="py-16 bg-gray-50">
-          <div className="max-w-7xl mx-auto px-4">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Your Recent Rides</h2>
-              <div className="w-24 h-1 bg-gradient-to-r from-blue-500 to-purple-500 mx-auto rounded-full"></div>
+        <section className="py-16 bg-gradient-to-b from-gray-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-gray-900 mb-4">Your Journey History</h2>
+              <div className="relative">
+                <div className="w-32 h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 mx-auto rounded-full" />
+                <div className="w-16 h-1.5 bg-gradient-to-r from-blue-400 to-purple-400 mx-auto rounded-full absolute -bottom-3 left-1/2 transform -translate-x-1/2 opacity-30 blur-sm" />
+              </div>
             </div>
 
             {rideData.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {rideData.map((ride) => (
                   <div
                     key={ride._id}
-                    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
-                    <div className="flex items-start space-x-4">
-                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                        <FaLocationArrow className="text-blue-500" size={20} />
-                      </div>
-                      <div className="flex-1">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2">
-                          Ride to {ride.dropoffLocation}
-                        </h3>
-                        <div className="space-y-2">
-                          <p className="text-sm text-gray-500">From: {ride.pickupLocation}</p>
-                          <div
-                            className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
-                              ride.status === 'completed'
-                                ? 'bg-green-100 text-green-700'
-                                : ride.status === 'ongoing'
-                                ? 'bg-blue-100 text-blue-700'
-                                : 'bg-yellow-100 text-yellow-700'
-                            }`}>
-                            {ride.status}
+                    className="group bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-blue-100">
+                    <div className="p-6">
+                      <div className="flex items-start space-x-4">
+                        <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                          <FaMapMarkerAlt className="text-blue-500 text-xl group-hover:text-blue-600 transition-colors duration-300" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-lg font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors duration-300">
+                            Ride to {ride.dropoffLocation}
+                          </h3>
+                          <div className="space-y-3">
+                            <div className="flex items-center text-sm text-gray-500">
+                              <FaMapMarkerAlt className="w-4 h-4 mr-2 text-gray-400" />
+                              <span className="truncate">From: {ride.pickupLocation}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span
+                                className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${getStatusStyles(
+                                  ride.status,
+                                )}`}>
+                                {ride.status.charAt(0).toUpperCase() + ride.status.slice(1)}
+                              </span>
+                              <FaChevronRight className="w-4 h-4 text-gray-400 group-hover:text-blue-500 transform group-hover:translate-x-1 transition-all duration-300" />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -303,14 +329,18 @@ const PostLoginHomepage = () => {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-                <p className="text-gray-600">No recent rides to show.</p>
+              <div className="text-center py-16 bg-white rounded-2xl shadow-sm border border-gray-100">
+                <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-gray-50 flex items-center justify-center">
+                  <FaCalendar className="w-8 h-8 text-gray-400" />
+                </div>
+                <p className="text-gray-600 mb-6">No recent rides to show.</p>
                 <button
                   onClick={() =>
                     document.getElementById('ride-request').scrollIntoView({ behavior: 'smooth' })
                   }
-                  className="mt-4 text-blue-500 hover:text-blue-600 font-medium">
-                  Book your first ride →
+                  className="inline-flex items-center px-6 py-3 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition-colors duration-300 font-medium shadow-lg hover:shadow-xl">
+                  Book your first ride
+                  <FaChevronRight className="ml-2 w-4 h-4" />
                 </button>
               </div>
             )}
