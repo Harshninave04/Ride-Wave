@@ -22,6 +22,38 @@ export const requestRide = async (req, res) => {
   }
 };
 
+// Fetch recent rides for the logged-in user
+export const fetchRecentRides = async (req, res) => {
+  try {
+    // Define a time range for "recent" rides, e.g., rides from the past week
+    const oneWeekAgo = new Date();
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+    // Find rides where the logged-in user is either the passenger or driver
+    const recentRides = await Ride.find({
+      $or: [
+        { passenger: req.user.id },
+        { driver: req.user.id }
+      ],
+      createdAt: { $gte: oneWeekAgo }
+    })
+      .sort({ createdAt: -1 }) // Sort by most recent first
+      .populate('passenger', 'name') // Populate passenger name if needed
+      .populate('driver', 'name') // Populate driver name if needed
+      .exec();
+
+    if (!recentRides.length) {
+      return res.status(200).json({ message: 'No recent rides found', rides: [] });
+    }
+
+    res.status(200).json({ rides: recentRides });
+  } catch (error) {
+    console.error('Error fetching recent rides:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+
 // Get available rides (rides with 'Pending' or 'Accepted' status)
 export const getAvailableRides = async (req, res) => {
   try {

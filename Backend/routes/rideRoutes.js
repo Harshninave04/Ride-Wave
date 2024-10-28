@@ -8,6 +8,7 @@ import {
   completeRide,
   getAvailableRides,
   rejectRide,
+  fetchRecentRides,
 } from '../controllers/rideController.js';
 
 const router = express.Router();
@@ -32,5 +33,9 @@ router.put('/complete/:rideId', protect, completeRide);
 
 // Get available ride requests (for drivers)
 router.get('/available', protect, restrictTo('driver'), getAvailableRides);
+
+// Fetch recent rides (Protected)
+router.get('/recent', protect, fetchRecentRides);
+
 
 export default router;
