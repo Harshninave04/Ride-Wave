@@ -1,11 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
-import {
-  FaCarSide,
-  FaHeadset,
-  FaRoute,
-} from 'react-icons/fa';
+import { FaCarSide, FaHeadset, FaRoute, FaMoneyBillWave, FaCar} from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { fetchUserProfile } from '../../api/auth'; // Assuming API method to fetch driver data
 import { acceptRideRequest, getAvailableRideRequests, rejectRideRequest } from '../../api/rideAPI.js';
@@ -115,44 +111,115 @@ const DriverHomepage = () => {
         <Navbar />
 
         {/* Hero Section */}
-        <section
-          id="home"
-          className="relative flex-grow flex flex-col items-center justify-center pt-20 pb-20 bg-gradient-to-r from-blue-50 to-blue-200">
-          <div
-            className="absolute inset-0 bg-cover bg-center"
-            style={{ backgroundImage: `url('/map1.jpg')` }}></div>
-          <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-          <div className="relative z-10 text-center px-6 py-20">
-            {driverData ? (
-              <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
-                Welcome, {driverData.name}!
-              </h1>
-            ) : (
-              <h1 className="text-4xl md:text-5xl font-extrabold text-white drop-shadow-lg">
-                Welcome, Driver!
-              </h1>
-            )}
-            <p className="mt-4 text-lg md:text-xl text-gray-200">
-              Ready for a smooth ride? Check your ride requests, track your earnings, and hit the
-              road!
-            </p>
-            <div className="mt-6">
-              <a
-                href="#ride-requests"
-                className="bg-white text-blue-600 py-3 px-6 rounded-lg shadow-lg hover:bg-gray-200 transition duration-300 transform hover:scale-105">
-                Check Ride Requests
-              </a>
-              <a
-                href="#earnings"
-                className="ml-4 text-white border border-white py-3 px-6 rounded-lg hover:bg-gray-200 hover:text-blue-600 transition duration-300 transform hover:scale-105">
-                View Earnings
-              </a>
+        <section id="home" className="relative w-full" style={{ height: 'calc(100vh/2)' }}>
+          {/* Background Container */}
+          <div className="w-full h-full relative">
+            <div
+              className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-100"
+              style={{
+                backgroundImage: `url('/map1.jpg')`,
+                minHeight: '100%',
+                minWidth: '100%',
+              }}
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/60 to-black/40" />
+          </div>
+
+          {/* Content Container */}
+          <div className="absolute inset-0">
+            <div className="h-full max-w-7xl mx-auto px-6 flex items-center justify-between">
+              {/* Left Side - Welcome Text and Stats */}
+              <div className="w-full lg:w-1/2">
+                {driverData ? (
+                  <h1 className="text-4xl lg:text-5xl font-bold text-white tracking-tight">
+                    Welcome back, <span className="text-blue-400">{driverData.name}</span>! 👋
+                  </h1>
+                ) : (
+                  <h1 className="text-4xl lg:text-5xl font-bold text-white tracking-tight">
+                    Welcome back, Driver! 👋
+                  </h1>
+                )}
+                <p className="mt-4 text-lg text-gray-300 max-w-xl">
+                  Ready for another great day on the road? Your dashboard is ready with new
+                  opportunities.
+                </p>
+
+                {/* Quick Stats */}
+                <div className="mt-8 grid grid-cols-2 gap-4 max-w-lg">
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                    <div className="flex items-center space-x-3">
+                      <FaCar className="text-blue-400 w-6 h-6" />
+                      <div>
+                        <p className="text-white/70 text-sm">Available Rides</p>
+                        <p className="text-white font-semibold text-xl">12</p>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                    <div className="flex items-center space-x-3">
+                      <FaMoneyBillWave className="text-green-400 w-6 h-6" />
+                      <div>
+                        <p className="text-white/70 text-sm">Today's Earnings</p>
+                        <p className="text-white font-semibold text-xl">$154.50</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="mt-8 flex flex-wrap gap-4">
+                  <button
+                    onClick={() =>
+                      document
+                        .getElementById('ride-requests')
+                        .scrollIntoView({ behavior: 'smooth' })
+                    }
+                    className="flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 hover:shadow-lg">
+                    <FaCar className="mr-2" />
+                    View Ride Requests
+                  </button>
+                  <button
+                    onClick={() =>
+                      document.getElementById('earnings').scrollIntoView({ behavior: 'smooth' })
+                    }
+                    className="flex items-center px-6 py-3 bg-white/10 hover:bg-white/20 text-white font-semibold rounded-xl border border-white/30 transition-all duration-200 backdrop-blur-sm">
+                    <FaMoneyBillWave className="mr-2" />
+                    Check Earnings
+                  </button>
+                </div>
+              </div>
+
+              {/* Right Side - Current Status Card */}
+              <div className="hidden lg:block w-[400px]">
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6">
+                  <h3 className="text-lg font-semibold text-gray-800 mb-4">Current Status</h3>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                      <span className="text-gray-600">Status</span>
+                      <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-medium">
+                        Online
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                      <span className="text-gray-600">Today's Trips</span>
+                      <span className="font-semibold text-gray-800">8 completed</span>
+                    </div>
+                    <div className="flex items-center justify-between pb-4 border-b border-gray-200">
+                      <span className="text-gray-600">Rating</span>
+                      <span className="font-semibold text-gray-800">4.9 ⭐</span>
+                    </div>
+                    <button className="w-full py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200">
+                      Go Offline
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </section>
 
         {/* Ride Requests Section */}
-        <section className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <section id='ride-requests' className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="max-w-7xl mx-auto px-4">
             {/* Header with animated underline */}
             <div className="text-center mb-12">
