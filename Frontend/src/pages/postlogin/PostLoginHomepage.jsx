@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import FeatureCard from '../../components/FeatureCard';
-import { requestRide, viewRideStatus } from '../../api/rideAPI';
+import { fetchRecentRides, requestRide, viewRideStatus } from '../../api/rideAPI';
 import { FaShieldAlt, FaMoneyBillWave, FaBolt, FaMapMarkerAlt, FaLocationArrow } from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import ServiceMap from '../../components/ServiceMap';
@@ -19,10 +19,7 @@ const PostLoginHomepage = () => {
     const fetchUserData = async () => {
       try {
         const token = localStorage.getItem('token');
-        if (!token) {
-          console.error('No token found');
-          return;
-        }
+        if (!token) return;
         const userData = await fetchUserProfile(token);
         setUserData(userData);
       } catch (error) {
@@ -30,29 +27,34 @@ const PostLoginHomepage = () => {
       }
     };
 
+    const fetchRides = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const recentRides = await fetchRecentRides(token);
+        setRideData(recentRides);
+      } catch (error) {
+        console.error('Error fetching recent rides:', error.message);
+      }
+    };
+
     fetchUserData();
+    fetchRides();
   }, []);
 
   const handleRideRequest = async () => {
     try {
       setIsRequesting(true);
       const token = localStorage.getItem('token');
-      const response = await requestRide(newRide.pickupLocation, newRide.dropoffLocation, token);
+      await requestRide(newRide.pickupLocation, newRide.dropoffLocation, token);
       setRideStatus('Ride Requested! 🚗 Searching for nearby drivers...');
+
+      // Re-fetch rides to display the new request immediately
+      const updatedRides = await fetchRecentRides(token);
+      setRideData(updatedRides);
     } catch (error) {
       setRideStatus('❌ Ride Request Failed');
     } finally {
       setIsRequesting(false);
-    }
-  };
-
-  const handleViewRideStatus = async (rideId) => {
-    try {
-      const token = localStorage.getItem('token');
-      const status = await viewRideStatus(rideId, token);
-      setRideStatus(status);
-    } catch (error) {
-      console.error('Error fetching ride status:', error);
     }
   };
 
@@ -273,13 +275,10 @@ const PostLoginHomepage = () => {
                 {rideData.map((ride) => (
                   <div
                     key={ride._id}
-                    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer"
-                    onClick={() => handleViewRideStatus(ride._id)}>
+                    className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 cursor-pointer">
                     <div className="flex items-start space-x-4">
-                      <div className="flex-shrink-0">
-                        <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-                          <FaLocationArrow className="text-blue-500" size={20} />
-                        </div>
+                      <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                        <FaLocationArrow className="text-blue-500" size={20} />
                       </div>
                       <div className="flex-1">
                         <h3 className="text-lg font-semibold text-gray-900 mb-2">
@@ -305,9 +304,6 @@ const PostLoginHomepage = () => {
               </div>
             ) : (
               <div className="text-center py-12 bg-white rounded-xl shadow-sm">
-                <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <FaLocationArrow className="text-gray-400" size={24} />
-                </div>
                 <p className="text-gray-600">No recent rides to show.</p>
                 <button
                   onClick={() =>

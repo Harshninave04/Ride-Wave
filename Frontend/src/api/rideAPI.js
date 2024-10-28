@@ -22,6 +22,21 @@ export const requestRide = async (pickupLocation, dropoffLocation, token) => {
   }
 };
 
+// Function to fetch recent rides for a passenger
+export const fetchRecentRides = async (token) => {
+  try {
+    const response = await axios.get(`${API_URL}/recent`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data.rides; // Assuming the response includes rides in a 'rides' array
+  } catch (error) {
+    console.error('Error fetching recent rides:', error);
+    throw error;
+  }
+};
+
 // Function to accept a ride request (for drivers)
 export const acceptRideRequest = async (rideId, token) => {
   try {
