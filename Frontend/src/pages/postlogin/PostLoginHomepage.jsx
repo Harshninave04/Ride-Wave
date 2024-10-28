@@ -38,7 +38,7 @@ const PostLoginHomepage = () => {
       setIsRequesting(true);
       const token = localStorage.getItem('token');
       const response = await requestRide(newRide.pickupLocation, newRide.dropoffLocation, token);
-      setRideStatus('🚗 Searching for nearby drivers...');
+      setRideStatus('Ride Requested! 🚗 Searching for nearby drivers...');
     } catch (error) {
       setRideStatus('❌ Ride Request Failed');
     } finally {
@@ -62,20 +62,27 @@ const PostLoginHomepage = () => {
         <Navbar />
 
         {/* Hero Section with Dynamic Background */}
-        <section className="relative min-h-[800px] h-screen max-h-[1000px] w-full overflow-hidden">
-          {/* Background Image */}
-          <div className="absolute inset-0">
-            <img src="/map1.jpg" alt="Map background" className="w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-black/40" />
+        <section className="relative w-full" style={{ height: 'calc(100vh/2)' }}>
+          {/* Background Image Container with Fixed Height and Width */}
+          <div className="w-full h-full">
+            <div className="w-full h-full relative">
+              <img
+                src="/map1.jpg"
+                alt="Map background"
+                className="absolute top-0 left-0 w-full h-full object-cover scale-100"
+                style={{ minHeight: '100%', minWidth: '100%' }}
+              />
+              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/50 via-black/40 to-black/30" />
+            </div>
           </div>
 
-          {/* Content Container */}
-          <div className="relative h-full w-full flex flex-col items-center justify-center px-4 py-8">
-            <div className="w-full max-w-6xl mx-auto flex flex-col items-center">
-              {/* Hero Text */}
-              <div className="text-center w-full mb-8 sm:mb-10">
-                <h1 className="text-4xl sm:text-5xl lg:text-7xl font-extrabold mb-4 tracking-tight px-4">
-                  <span className="bg-gradient-to-r from-white to-orange-400 text-transparent bg-clip-text drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)]">
+          {/* Content Container with Improved Scaling */}
+          <div className="absolute top-0 left-0 w-full h-full">
+            <div className="relative h-full w-full max-w-7xl mx-auto px-4 flex items-center justify-between">
+              {/* Left Side - Welcome Text */}
+              <div className="w-full md:w-1/2 pt-8">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 tracking-tight">
+                  <span className="text-white drop-shadow-lg">
                     {userData ? (
                       <>Hello, {userData.name.split(' ')[0]}! 👋</>
                     ) : (
@@ -83,35 +90,35 @@ const PostLoginHomepage = () => {
                     )}
                   </span>
                 </h1>
-                <p className="text-lg sm:text-xl text-white/90 max-w-2xl mx-auto font-normal drop-shadow-[0_1px_1px_rgba(0,0,0,0.8)] px-4">
+                <p className="text-lg md:text-xl text-white/90 font-medium max-w-xl drop-shadow-md">
                   Your journey begins here. Where would you like to go today?
                 </p>
               </div>
 
-              {/* Ride Request Card */}
-              <div className="w-full max-w-md px-4">
-                <div className="bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 sm:p-8">
-                  <div className="space-y-4 sm:space-y-6">
+              {/* Right Side - Ride Request Card */}
+              <div className="hidden md:block w-full md:w-[400px]">
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6">
+                  <div className="space-y-4">
                     {/* Pickup Location */}
-                    <div className="relative group">
+                    <div className="relative">
                       <FaLocationArrow
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500"
-                        size={20}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500"
+                        size={18}
                       />
                       <input
                         type="text"
                         placeholder="Enter pickup location"
                         value={newRide.pickupLocation}
                         onChange={(e) => setNewRide({ ...newRide, pickupLocation: e.target.value })}
-                        className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
                       />
                     </div>
 
                     {/* Dropoff Location */}
-                    <div className="relative group">
+                    <div className="relative">
                       <FaMapMarkerAlt
-                        className="absolute left-4 top-1/2 transform -translate-y-1/2 text-purple-500"
-                        size={20}
+                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500"
+                        size={18}
                       />
                       <input
                         type="text"
@@ -120,7 +127,7 @@ const PostLoginHomepage = () => {
                         onChange={(e) =>
                           setNewRide({ ...newRide, dropoffLocation: e.target.value })
                         }
-                        className="w-full pl-12 pr-4 py-3 sm:py-4 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-200"
+                        className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200"
                       />
                     </div>
 
@@ -128,7 +135,7 @@ const PostLoginHomepage = () => {
                     <button
                       onClick={handleRideRequest}
                       disabled={isRequesting}
-                      className="w-full py-3 sm:py-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed hover:shadow-lg">
+                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed hover:shadow-lg">
                       {isRequesting ? (
                         <span className="flex items-center justify-center space-x-2">
                           <svg
@@ -142,11 +149,13 @@ const PostLoginHomepage = () => {
                               cy="12"
                               r="10"
                               stroke="currentColor"
-                              strokeWidth="4"></circle>
+                              strokeWidth="4"
+                            />
                             <path
                               className="opacity-75"
                               fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
                           </svg>
                           <span>Finding your ride...</span>
                         </span>
@@ -157,15 +166,54 @@ const PostLoginHomepage = () => {
 
                     {/* Status Message */}
                     {rideStatus && (
-                      <div className="mt-4 py-3 px-4 bg-green-50 border border-green-100 rounded-xl">
-                        <p className="text-green-700 text-center font-medium">
-                          Ride requested! A driver will be assigned shortly.
+                      <div className="py-3 px-4 bg-green-50 border border-green-100 rounded-xl">
+                        <p className="text-green-700 text-center text-sm font-medium">
+                          {rideStatus}
                         </p>
                       </div>
                     )}
                   </div>
                 </div>
               </div>
+            </div>
+          </div>
+
+          {/* Mobile Ride Request Card */}
+          <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white shadow-lg rounded-t-3xl">
+            <div className="space-y-3">
+              <div className="w-12 h-1 bg-gray-300 rounded-full mx-auto mb-4" />
+              <div className="relative">
+                <FaLocationArrow
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Enter pickup location"
+                  value={newRide.pickupLocation}
+                  onChange={(e) => setNewRide({ ...newRide, pickupLocation: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                />
+              </div>
+              <div className="relative">
+                <FaMapMarkerAlt
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500"
+                  size={18}
+                />
+                <input
+                  type="text"
+                  placeholder="Enter destination"
+                  value={newRide.dropoffLocation}
+                  onChange={(e) => setNewRide({ ...newRide, dropoffLocation: e.target.value })}
+                  className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200"
+                />
+              </div>
+              <button
+                onClick={handleRideRequest}
+                disabled={isRequesting}
+                className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed hover:shadow-lg">
+                {isRequesting ? 'Finding your ride...' : 'Request Ride'}
+              </button>
             </div>
           </div>
         </section>
