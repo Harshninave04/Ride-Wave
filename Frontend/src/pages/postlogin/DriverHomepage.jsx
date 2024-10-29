@@ -48,7 +48,6 @@ const DriverHomepage = () => {
     fetchRideRequests();
   }, []);
 
-
   useEffect(() => {
     console.log('Current ride requests state:', rideRequests); // Log state whenever it changes
   }, [rideRequests]);
@@ -59,84 +58,81 @@ const DriverHomepage = () => {
     );
   };
 
-const handleStartRide = async (rideId) => {
-  try {
-    setLoading((prev) => ({ ...prev, [rideId]: true }));
-    const token = localStorage.getItem('token');
-    await startRide(rideId, token);
-    updateRideStatus(rideId, 'InProgress');
-    setLoading((prev) => ({ ...prev, [rideId]: false }));
-  } catch (error) {
-    console.error('Error starting ride:', error);
-    setLoading((prev) => ({ ...prev, [rideId]: false }));
-  }
-};
+  const handleStartRide = async (rideId) => {
+    try {
+      setLoading((prev) => ({ ...prev, [rideId]: true }));
+      const token = localStorage.getItem('token');
+      await startRide(rideId, token);
+      updateRideStatus(rideId, 'InProgress');
+      setLoading((prev) => ({ ...prev, [rideId]: false }));
+    } catch (error) {
+      console.error('Error starting ride:', error);
+      setLoading((prev) => ({ ...prev, [rideId]: false }));
+    }
+  };
 
-const handleCompleteRide = async (rideId) => {
-  try {
-    setLoading((prev) => ({ ...prev, [rideId]: true }));
-    const token = localStorage.getItem('token');
-    await completeRide(rideId, token);
-    updateRideStatus(rideId, 'Completed');
-    setLoading((prev) => ({ ...prev, [rideId]: false }));
-  } catch (error) {
-    console.error('Error completing ride:', error);
-    setLoading((prev) => ({ ...prev, [rideId]: false }));
-  }
-};
+  const handleCompleteRide = async (rideId) => {
+    try {
+      setLoading((prev) => ({ ...prev, [rideId]: true }));
+      const token = localStorage.getItem('token');
+      await completeRide(rideId, token);
+      updateRideStatus(rideId, 'Completed');
+      setLoading((prev) => ({ ...prev, [rideId]: false }));
+    } catch (error) {
+      console.error('Error completing ride:', error);
+      setLoading((prev) => ({ ...prev, [rideId]: false }));
+    }
+  };
 
-const renderRideActions = (ride) => {
-  switch (ride.status) {
-    case 'Pending':
-      return (
-        <div className="flex space-x-3">
+  const renderRideActions = (ride) => {
+    switch (ride.status) {
+      case 'Pending':
+        return (
+          <div className="flex space-x-3">
+            <button
+              onClick={() => handleAcceptRide(ride._id)}
+              className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
+              Accept
+            </button>
+            <button
+              onClick={() => openRejectModal(ride._id)}
+              className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
+              Reject
+            </button>
+          </div>
+        );
+
+      case 'Accepted':
+        return (
           <button
-            onClick={() => handleAcceptRide(ride._id)}
-            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
-            Accept
+            onClick={() => handleStartRide(ride._id)}
+            disabled={loading[ride._id]}
+            className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
+            {loading[ride._id] ? 'Starting...' : 'Start Ride'}
           </button>
+        );
+
+      case 'In Progress':
+        return (
           <button
-            onClick={() => {
-              setSelectedRideId(ride._id);
-              setShowRejectModal(true);
-            }}
-            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
-            Reject
+            onClick={() => handleCompleteRide(ride._id)}
+            disabled={loading[ride._id]}
+            className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
+            {loading[ride._id] ? 'Completing...' : 'Complete Ride'}
           </button>
-        </div>
-      );
+        );
 
-    case 'Accepted':
-      return (
-        <button
-          onClick={() => handleStartRide(ride._id)}
-          disabled={loading[ride._id]}
-          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
-          {loading[ride._id] ? 'Starting...' : 'Start Ride'}
-        </button>
-      );
+      case 'Completed':
+        return (
+          <div className="bg-gray-100 text-gray-600 py-2 px-4 rounded-lg text-center font-semibold">
+            Completed
+          </div>
+        );
 
-    case 'In Progress':
-      return (
-        <button
-          onClick={() => handleCompleteRide(ride._id)}
-          disabled={loading[ride._id]}
-          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
-          {loading[ride._id] ? 'Completing...' : 'Complete Ride'}
-        </button>
-      );
-
-    case 'Completed':
-      return (
-        <div className="bg-gray-100 text-gray-600 py-2 px-4 rounded-lg text-center font-semibold">
-          Completed
-        </div>
-      );
-
-    default:
-      return null;
-  }
-};
+      default:
+        return null;
+    }
+  };
 
   // Function to accept a ride
   const handleAcceptRide = async (rideId) => {
@@ -153,41 +149,29 @@ const renderRideActions = (ride) => {
     }
   };
 
-
   // Function to reject a ride
   const handleRejectRide = async (rideId) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await rejectRideRequest(rideId, token);
-      console.log('Ride rejected:', response);
-      // Optionally, update the UI after rejecting the ride
-      // e.g., remove the ride from the list
-      setRejectedRide(rideId);
-      setShowRejectModal(true);
+      await rejectRideRequest(rideId, token);
+
+      // Update the UI by removing the rejected ride
+      setRideRequests((prev) => prev.filter((ride) => ride._id !== rideId));
+
+      // Close the modal
+      setShowRejectModal(false);
+      // Reset the selected ride
+      setSelectedRideId(null);
     } catch (error) {
       console.error('Failed to reject ride:', error);
     }
   };
 
-  const confirmRejectRide = () => {
-    if (rejectedRide) {
-      // Update the state first (close modal, remove card)
-      setRideRequests((prev) => prev.filter((ride) => ride._id !== rejectedRide));
-      setShowRejectModal(false); // Close the modal
-
-      // Now send the rejection request to the backend
-      rejectRideRequest(rejectedRide)
-        .then(() => {
-          // Optionally handle the success response if needed
-          setRejectedRide(null); // Reset the rejected ride
-        })
-        .catch((error) => {
-          console.error('Error rejecting ride:', error);
-          // Optionally handle error (e.g., add back the ride if the API request fails)
-        });
-    }
+  // Function to open reject modal
+  const openRejectModal = (rideId) => {
+    setSelectedRideId(rideId);
+    setShowRejectModal(true);
   };
-
 
   return (
     <IconContext.Provider value={{ color: '#3B82F6', size: '40px' }}>
@@ -459,15 +443,15 @@ const renderRideActions = (ride) => {
                   <div className="flex justify-end space-x-4">
                     <button
                       className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium"
-                      onClick={() => setShowRejectModal(false)}>
+                      onClick={() => {
+                        setShowRejectModal(false);
+                        setSelectedRideId(null);
+                      }}>
                       Cancel
                     </button>
                     <button
                       className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors font-medium"
-                      onClick={() => {
-                        handleRejectRide(selectedRideId);
-                        setShowRejectModal(false);
-                      }}>
+                      onClick={() => handleRejectRide(selectedRideId)}>
                       Confirm Reject
                     </button>
                   </div>
