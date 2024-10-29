@@ -4,7 +4,7 @@ import Footer from '../../components/Footer';
 import { FaCarSide, FaHeadset, FaRoute, FaMoneyBillWave, FaCar} from 'react-icons/fa';
 import { IconContext } from 'react-icons';
 import { fetchUserProfile } from '../../api/auth'; // Assuming API method to fetch driver data
-import { acceptRideRequest, getAvailableRideRequests, rejectRideRequest } from '../../api/rideAPI.js';
+import { acceptRideRequest, completeRide, getAvailableRideRequests, rejectRideRequest, startRide } from '../../api/rideAPI.js';
 
 const DriverHomepage = () => {
   const [driverData, setDriverData] = useState(null);
@@ -12,6 +12,8 @@ const DriverHomepage = () => {
   const [rideRequests, setRideRequests] = useState([]); // Pending rides
   const [showRejectModal, setShowRejectModal] = useState(false);
   const [rejectedRide, setRejectedRide] = useState(null);
+  const [selectedRideId, setSelectedRideId] = useState(null);
+  const [loading, setLoading] = useState({});
 
   useEffect(() => {
     const fetchDriverData = async () => {
@@ -51,7 +53,90 @@ const DriverHomepage = () => {
     console.log('Current ride requests state:', rideRequests); // Log state whenever it changes
   }, [rideRequests]);
 
+  const updateRideStatus = (rideId, newStatus) => {
+    setRideRequests((prevRequests) =>
+      prevRequests.map((ride) => (ride._id === rideId ? { ...ride, status: newStatus } : ride)),
+    );
+  };
 
+const handleStartRide = async (rideId) => {
+  try {
+    setLoading((prev) => ({ ...prev, [rideId]: true }));
+    const token = localStorage.getItem('token');
+    await startRide(rideId, token);
+    updateRideStatus(rideId, 'InProgress');
+    setLoading((prev) => ({ ...prev, [rideId]: false }));
+  } catch (error) {
+    console.error('Error starting ride:', error);
+    setLoading((prev) => ({ ...prev, [rideId]: false }));
+  }
+};
+
+const handleCompleteRide = async (rideId) => {
+  try {
+    setLoading((prev) => ({ ...prev, [rideId]: true }));
+    const token = localStorage.getItem('token');
+    await completeRide(rideId, token);
+    updateRideStatus(rideId, 'Completed');
+    setLoading((prev) => ({ ...prev, [rideId]: false }));
+  } catch (error) {
+    console.error('Error completing ride:', error);
+    setLoading((prev) => ({ ...prev, [rideId]: false }));
+  }
+};
+
+const renderRideActions = (ride) => {
+  switch (ride.status) {
+    case 'Pending':
+      return (
+        <div className="flex space-x-3">
+          <button
+            onClick={() => handleAcceptRide(ride._id)}
+            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
+            Accept
+          </button>
+          <button
+            onClick={() => {
+              setSelectedRideId(ride._id);
+              setShowRejectModal(true);
+            }}
+            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
+            Reject
+          </button>
+        </div>
+      );
+
+    case 'Accepted':
+      return (
+        <button
+          onClick={() => handleStartRide(ride._id)}
+          disabled={loading[ride._id]}
+          className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-blue-600 hover:to-blue-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
+          {loading[ride._id] ? 'Starting...' : 'Start Ride'}
+        </button>
+      );
+
+    case 'In Progress':
+      return (
+        <button
+          onClick={() => handleCompleteRide(ride._id)}
+          disabled={loading[ride._id]}
+          className="w-full bg-gradient-to-r from-purple-500 to-purple-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-purple-600 hover:to-purple-700 transition-all duration-200 transform hover:-translate-y-0.5 disabled:opacity-50">
+          {loading[ride._id] ? 'Completing...' : 'Complete Ride'}
+        </button>
+      );
+
+    case 'Completed':
+      return (
+        <div className="bg-gray-100 text-gray-600 py-2 px-4 rounded-lg text-center font-semibold">
+          Completed
+        </div>
+      );
+
+    default:
+      return null;
+  }
+};
 
   // Function to accept a ride
   const handleAcceptRide = async (rideId) => {
@@ -219,9 +304,10 @@ const DriverHomepage = () => {
         </section>
 
         {/* Ride Requests Section */}
-        <section id='ride-requests' className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <section
+          id="ride-requests"
+          className="py-16 bg-gradient-to-br from-blue-50 via-white to-purple-50">
           <div className="max-w-7xl mx-auto px-4">
-            {/* Header with animated underline */}
             <div className="text-center mb-12">
               <h2 className="text-4xl font-bold text-gray-800 mb-4 relative inline-block">
                 Current Ride Requests
@@ -235,7 +321,6 @@ const DriverHomepage = () => {
                   <div
                     key={ride._id}
                     className="group relative bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden">
-                    {/* Decorative top gradient bar */}
                     <div className="absolute top-0 left-0 right-0 h-2 bg-gradient-to-r from-blue-400 to-purple-400" />
 
                     <div className="p-6 pt-8">
@@ -259,6 +344,22 @@ const DriverHomepage = () => {
                           <p className="text-sm text-gray-500">Passenger</p>
                           <p className="font-semibold text-gray-800">{ride.passenger.name}</p>
                         </div>
+                      </div>
+
+                      {/* Status Badge */}
+                      <div className="mb-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-sm font-medium ${
+                            ride.status === 'InProgress'
+                              ? 'bg-blue-100 text-blue-800'
+                              : ride.status === 'Completed'
+                              ? 'bg-green-100 text-green-800'
+                              : ride.status === 'Accepted'
+                              ? 'bg-yellow-100 text-yellow-800'
+                              : 'bg-gray-100 text-gray-800'
+                          }`}>
+                          {ride.status}
+                        </span>
                       </div>
 
                       {/* Location Details */}
@@ -320,25 +421,8 @@ const DriverHomepage = () => {
                         </div>
                       </div>
 
-                      {/* Status and Actions */}
-                      {ride.status === 'Accepted' ? (
-                        <div className="bg-green-500 text-white py-2 px-4 rounded-lg text-center font-semibold">
-                          Accepted
-                        </div>
-                      ) : (
-                        <div className="flex space-x-3">
-                          <button
-                            onClick={() => handleAcceptRide(ride._id)}
-                            className="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-green-600 hover:to-green-700 transition-all duration-200 transform hover:-translate-y-0.5">
-                            Accept
-                          </button>
-                          <button
-                            onClick={() => handleRejectRide(ride._id)}
-                            className="flex-1 bg-gradient-to-r from-red-500 to-red-600 text-white py-2 px-4 rounded-lg font-semibold hover:from-red-600 hover:to-red-700 transition-all duration-200 transform hover:-translate-y-0.5">
-                            Reject
-                          </button>
-                        </div>
-                      )}
+                      {/* Render actions based on ride status */}
+                      {renderRideActions(ride)}
                     </div>
                   </div>
                 ))}
@@ -380,7 +464,10 @@ const DriverHomepage = () => {
                     </button>
                     <button
                       className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-lg hover:from-red-600 hover:to-red-700 transition-colors font-medium"
-                      onClick={confirmRejectRide}>
+                      onClick={() => {
+                        handleRejectRide(selectedRideId);
+                        setShowRejectModal(false);
+                      }}>
                       Confirm Reject
                     </button>
                   </div>
