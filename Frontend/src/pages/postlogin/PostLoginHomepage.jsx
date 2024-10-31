@@ -19,9 +19,15 @@ import { fetchUserProfile } from '../../api/auth';
 const PostLoginHomepage = () => {
   const [userData, setUserData] = useState(null);
   const [rideData, setRideData] = useState([]);
-  const [newRide, setNewRide] = useState({ pickupLocation: '', dropoffLocation: '' });
+  const [newRide, setNewRide] = useState({
+    pickupLocation: '',
+    dropoffLocation: '',
+    serviceType: 'business',
+  });
   const [rideStatus, setRideStatus] = useState(null);
   const [isRequesting, setIsRequesting] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -34,6 +40,7 @@ const PostLoginHomepage = () => {
         console.error('Error fetching user data:', error.message);
       }
     };
+
 
     const fetchRides = async () => {
       try {
@@ -54,7 +61,11 @@ const PostLoginHomepage = () => {
       setIsRequesting(true);
       const token = localStorage.getItem('token');
       await requestRide(newRide.pickupLocation, newRide.dropoffLocation, token);
-      setRideStatus('Ride Requested! 🚗 Searching for nearby drivers...');
+      // setRideStatus('Ride Requested! 🚗 Searching for nearby drivers...');
+      setTimeout(() => {
+        setIsRequesting(false);
+        setRideStatus('Your ride has been confirmed!');
+      }, 2000);
 
       // Re-fetch rides to display the new request immediately
       const updatedRides = await fetchRecentRides(token);
@@ -65,6 +76,12 @@ const PostLoginHomepage = () => {
       setIsRequesting(false);
     }
   };
+
+  const serviceTypes = [
+    { id: 'economy', name: 'Economy', basePrice: 25, priceRange: '25-35' },
+    { id: 'business', name: 'Business', basePrice: 45, priceRange: '45-60' },
+    { id: 'executive', name: 'Executive', basePrice: 75, priceRange: '75-95' },
+  ];
 
   const getStatusStyles = (status) => {
     switch (status) {
@@ -83,7 +100,7 @@ const PostLoginHomepage = () => {
         <Navbar />
 
         {/* Hero Section with Dynamic Background */}
-        <section className="relative w-full" style={{ height: 'calc(100vh/2)' }}>
+        <section className="relative w-full" style={{ height: 'calc(100vh/(1.5))' }}>
           {/* Background Image Container with Fixed Height and Width */}
           <div className="w-full h-full">
             <div className="w-full h-full relative">
@@ -118,82 +135,131 @@ const PostLoginHomepage = () => {
 
               {/* Right Side - Ride Request Card */}
               <div className="hidden md:block w-full md:w-[400px]">
-                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6">
-                  <div className="space-y-4">
-                    {/* Pickup Location */}
-                    <div className="relative">
-                      <FaLocationArrow
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500"
-                        size={18}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Enter pickup location"
-                        value={newRide.pickupLocation}
-                        onChange={(e) => setNewRide({ ...newRide, pickupLocation: e.target.value })}
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
-                      />
-                    </div>
-
-                    {/* Dropoff Location */}
-                    <div className="relative">
-                      <FaMapMarkerAlt
-                        className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500"
-                        size={18}
-                      />
-                      <input
-                        type="text"
-                        placeholder="Enter destination"
-                        value={newRide.dropoffLocation}
-                        onChange={(e) =>
-                          setNewRide({ ...newRide, dropoffLocation: e.target.value })
-                        }
-                        className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200"
-                      />
-                    </div>
-
-                    {/* Request Button */}
-                    <button
-                      onClick={handleRideRequest}
-                      disabled={isRequesting}
-                      className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed hover:shadow-lg">
-                      {isRequesting ? (
-                        <span className="flex items-center justify-center space-x-2">
-                          <svg
-                            className="animate-spin h-5 w-5 text-white"
-                            xmlns="http://www.w3.org/2000/svg"
-                            fill="none"
-                            viewBox="0 0 24 24">
-                            <circle
-                              className="opacity-25"
-                              cx="12"
-                              cy="12"
-                              r="10"
-                              stroke="currentColor"
-                              strokeWidth="4"
-                            />
-                            <path
-                              className="opacity-75"
-                              fill="currentColor"
-                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                            />
-                          </svg>
-                          <span>Finding your ride...</span>
-                        </span>
-                      ) : (
-                        'Request Ride'
-                      )}
-                    </button>
-
-                    {/* Status Message */}
-                    {rideStatus && (
-                      <div className="py-3 px-4 bg-green-50 border border-green-100 rounded-xl">
-                        <p className="text-green-700 text-center text-sm font-medium">
-                          {rideStatus}
-                        </p>
+                <div className="bg-white/95 backdrop-blur-sm rounded-2xl shadow-2xl p-6">                  
+                    <div className="space-y-4">
+                      {/* Pickup Location */}
+                      <div className="relative">
+                        <FaLocationArrow
+                          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-blue-500"
+                          size={18}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Enter pickup location"
+                          value={newRide.pickupLocation}
+                          onChange={(e) =>
+                            setNewRide({ ...newRide, pickupLocation: e.target.value })
+                          }
+                          className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-blue-500 focus:ring-2 focus:ring-blue-100 transition-all duration-200"
+                        />
                       </div>
-                    )}
-                  </div>
+
+                      {/* Dropoff Location */}
+                      <div className="relative">
+                        <FaMapMarkerAlt
+                          className="absolute left-3 top-1/2 transform -translate-y-1/2 text-purple-500"
+                          size={18}
+                        />
+                        <input
+                          type="text"
+                          placeholder="Enter destination"
+                          value={newRide.dropoffLocation}
+                          onChange={(e) =>
+                            setNewRide({ ...newRide, dropoffLocation: e.target.value })
+                          }
+                          className="w-full pl-10 pr-4 py-3 bg-gray-50 rounded-xl border-2 border-gray-100 focus:border-purple-500 focus:ring-2 focus:ring-purple-100 transition-all duration-200"
+                        />
+                      </div>
+
+                      {!isMobile && (
+                        <>
+                          {/* Fare Estimate Section */}
+                          <div className="mt-6">
+                            <div className="flex items-center mb-3">
+                              <FaMoneyBillWave className="text-emerald-500 mr-2" size={18} />
+                              <span className="font-medium text-gray-700">
+                                Select Service Class
+                              </span>
+                            </div>
+                            <div className="grid grid-cols-3 gap-2">
+                              {serviceTypes.map((service) => (
+                                <button
+                                  key={service.id}
+                                  onClick={() =>
+                                    setNewRide({ ...newRide, serviceType: service.id })
+                                  }
+                                  className={`p-3 rounded-xl text-sm font-medium transition-all duration-200 ${
+                                    newRide.serviceType === service.id
+                                      ? 'bg-blue-50 text-blue-700 border-2 border-blue-200'
+                                      : 'bg-gray-50 text-gray-600 border-2 border-gray-100 hover:bg-gray-100'
+                                  }`}>
+                                  <div className="text-center">
+                                    <div>{service.name}</div>
+                                    <div className="text-xs mt-1">${service.priceRange}</div>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+
+                          {/* Estimated Fare Display */}
+                          <div className="bg-gray-50 p-4 rounded-xl">
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-600">Estimated Fare</span>
+                              <span className="text-lg font-semibold text-gray-800">
+                                $
+                                {serviceTypes.find((s) => s.id === newRide.serviceType)?.priceRange}
+                              </span>
+                            </div>
+                            <div className="mt-2 text-xs text-gray-500">
+                              Final fare may vary based on traffic and waiting time
+                            </div>
+                          </div>
+                        </>
+                      )}
+
+                      {/* Request Button */}
+                      <button
+                        onClick={handleRideRequest}
+                        disabled={isRequesting}
+                        className="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-xl transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed hover:shadow-lg">
+                        {isRequesting ? (
+                          <span className="flex items-center justify-center space-x-2">
+                            <svg
+                              className="animate-spin h-5 w-5 text-white"
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24">
+                              <circle
+                                className="opacity-25"
+                                cx="12"
+                                cy="12"
+                                r="10"
+                                stroke="currentColor"
+                                strokeWidth="4"
+                              />
+                              <path
+                                className="opacity-75"
+                                fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                              />
+                            </svg>
+                            <span>Finding your ride...</span>
+                          </span>
+                        ) : (
+                          'Request Ride'
+                        )}
+                      </button>
+
+                      {/* Status Message */}
+                      {rideStatus && (
+                        <div className="py-3 px-4 bg-green-50 border border-green-100 rounded-xl">
+                          <p className="text-green-700 text-center text-sm font-medium">
+                            {rideStatus}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                 </div>
               </div>
             </div>
