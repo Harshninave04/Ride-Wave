@@ -68,7 +68,7 @@ Once a user reviews the estimated fare and ETA, they can request a ride. By buil
 
 We don't need to add any new entities at all, we just need to add a Ride table to our Database.
 
-![High-Level Design Diagram](link-to-diagram-image)
+![High-Level Design Diagram](./assets/hld2.png)
 
 ### Handling a Ride Request  
 
@@ -97,7 +97,7 @@ Now we need to introduce some new components in order to facilitate driver match
 2. **Location Service**: Manages the real-time location data of drivers. It is responsible for receiving location updates from drivers, storing this information in the database, and providing the Ride Matching Service with the latest location data to facilitate accurate and efficient driver matching.
 3. **Ride Matching Service**: Handles incoming ride requests and utilizes a sophisticated algorithm (abstracted away for the purpose of this interview) to match these requests with the best available drivers based on proximity, availability, driver rating, and other relevant factors.
 
-![High-Level Design Diagram](link-to-diagram-image)
+![High-Level Design Diagram](./assets/hld3.png)
 
 ### Ride Request and Driver Matching Workflow  
 
@@ -126,7 +126,7 @@ We only need to add one additional service to our existing design.
 
 1. **Notification Service**: Responsible for dispatching real-time notifications to drivers when a new ride request is matched to them. It ensures that drivers are promptly informed so they can accept ride requests in a timely manner, thus maintaining a fluid user experience. Notifications are sent via APN (Apple Push Notification) and FCM (Firebase Cloud Messaging) for iOS and Android devices, respectively.
 
-![High-Level Design Diagram](link-to-diagram-image)
+![High-Level Design Diagram](./assets/hld4.png)
 
 ### Driver Accepts Ride Request and Completes the Ride  
 
