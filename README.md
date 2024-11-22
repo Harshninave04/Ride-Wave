@@ -148,6 +148,9 @@ We only need to add one additional service to our existing design.
 5. Driver Navigation  
 -- The driver uses the provided coordinates and their client GPS to navigate to the pickup location.  
 
+## Final Solution of High Level Design!!
+
+![High-Level Design Final Workflow](./assets/hld-final.png)
 
 ---
 
