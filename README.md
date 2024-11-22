@@ -42,7 +42,7 @@ The first thing that users will do when they open the app to request a ride is s
 
 Lets lay out the necessary components for communicating between the client and our microservices, adding our first service, “Ride Service” which will handle fare estimations
 
-![High-Level Design Diagram](link-to-diagram-image)
+![High-Level Design Diagram](./assets/hld1.png)
 
 ### Core Components  
 
